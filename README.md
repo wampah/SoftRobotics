@@ -38,7 +38,7 @@ Este es mi repositorio personal para el curso de Soft Robotics (IMEC-4550) de la
     Crea un entorno virtual para manejar las dependencias del proyecto de manera aislada:
 
     ```bash
-    python -m virtualenv soro_venv --python=python3.8
+    virtualenv soro_venv --python=python3.8
     ```
 
     Activa el entorno virtual:
@@ -58,7 +58,7 @@ Este es mi repositorio personal para el curso de Soft Robotics (IMEC-4550) de la
     Con el entorno virtual activo, instala las dependencias necesarias ejecutando:
 
     ```bash
-    python -m pip install -r requirements.txt
+    pip install -r requirements.txt
     ```
 
 ## Licencia
