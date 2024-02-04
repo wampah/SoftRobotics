@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+
+<Node name="root" dt="0.01" gravity="0 0 0">
+    <RequiredPlugin name="Sofa.Component.StateContainer"/>
+    <RequiredPlugin name="Sofa.Component.Mass"/>
+    <RequiredPlugin name="Sofa.Component.MechanicalLoad"/>
+    <RequiredPlugin name="Sofa.Component.LinearSolver.Iterative"/>
+    <RequiredPlugin name="Sofa.Component.ODESolver.Backward"/>
+    <RequiredPlugin name="Sofa.Component.Engine.Transform"/>
+    <RequiredPlugin name="Sofa.Component.IO.Mesh"/>
+    <RequiredPlugin name="Sofa.Component.Topology.Container.Dynamic"/>
+    <RequiredPlugin name="Sofa.Component.SolidMechanics.FEM.Elastic"/>
+    <RequiredPlugin name="Sofa.GL.Component.Rendering3D"/>
+    <RequiredPlugin name="Sofa.Component.Mapping.Linear"/>
+    <RequiredPlugin name="Sofa.Component.Constraint.Projective"/>
+    <RequiredPlugin name="Sofa.Component.Collision.Detection.Algorithm"/>
+    <RequiredPlugin name="Sofa.Component.Collision.Geometry"/>
+    <RequiredPlugin name="Sofa.Component.Topology.Container.Constant"/>
+    <RequiredPlugin name="Sofa.Component.Collision.Detection.Intersection"/>
+    <RequiredPlugin name="Sofa.Component.Collision.Response.Contact"/>
+    <RequiredPlugin name="Sofa.Component.Visual"/>
+
+    <DefaultAnimationLoop/>
+    <DefaultVisualManagerLoop/>
+    <VisualStyle displayFlags="showCollisionModels hideVisualModels"/>
+
+    <CollisionPipeline/>
+    <BruteForceBroadPhase/>
+    <BVHNarrowPhase/>
+    <MinProximityIntersection name="proximity" alarmDistance="0.5" contactDistance="0.25"/>
+    <DefaultContactManager name="Response" response="PenalityContactForceField"/>
+
+    <MeshGmshLoader name="meshLoaderCoarse" filename="mesh/liver.msh"/>
+    <MeshOBJLoader name="meshLoaderFine" filename="mesh/liver-smooth.obj"/>
+    <TransformEngine name="transformer" input_position="@meshLoaderCoarse.position" translation="0 0 0" rotation="0 0 0"/>
+
+
+    <Node name="Particle" bbox="-1 -1 -1 1 1 1">
+
+        <EulerImplicitSolver/>
+        <CGLinearSolver iterations="200" tolerance="1e-09" threshold="1e-09"/>
+
+        <TetrahedronSetTopologyContainer name="topo" src="@../meshLoaderCoarse"/>
+        <TetrahedronSetGeometryAlgorithms template="Vec3d" name="GeomAlgo"/>
+
+        <MechanicalObject template="Vec3d" name="MechanicalModel" showObject="1" showObjectScale="3"/>
+
+        <TetrahedronFEMForceField name="FEM" youngModulus="1000" poissonRatio="0.4" method="large"/>
+        <MeshMatrixMass massDensity="1"/>
+        <ConstantForceField totalForce="1 0 0"/>
+        <FixedConstraint indices="1 3 50"/>
+    
+        <Node name="FineVisualModel">
+            <OglModel name="VisualModel" src="@../../meshLoaderFine"/>
+            <BarycentricMapping name="Mapping" input="@../MechanicalModel" output="@VisualModel"/>
+        </Node>
+
+        <Node name="Collision">
+            <MeshTopology src="@../../meshLoaderFine"/>
+            <MechanicalObject name="CollisionMO" scale="1.0"/>
+            <TriangleCollisionModel name="CollisionModel" contactStiffness="3"/>
+            <BarycentricMapping name="CollsionMapping" input="@../MechanicalModel" output="@CollisionMO"/>
+        </Node>
+    </Node>
+
+    <Node name="Sphere">
+        <EulerImplicitSolver rayleighStiffness="0"/>
+        <CGLinearSolver iterations="200" tolerance="1e-09" threshold="1e-09"/>
+        <MechanicalObject template="Rigid3d" name="myParticle" position="-2 10 0 0 0 0 1" showObject="1" showObjectScale="0.5"/>
+        <UniformMass totalMass="1"/>
+        <ConstantForceField force="0 -1 0 0 0 0"/>
+        <SphereCollisionModel name="Floor" radius="1" simulated="1" moving="1" contactStiffness="100"/>
+    </Node>
+</Node>

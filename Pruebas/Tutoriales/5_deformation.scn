@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<Node name="root" dt="0.01" gravity="0 0 0">
+    <RequiredPlugin name="Sofa.Component.StateContainer"/>
+    <RequiredPlugin name="Sofa.Component.Mass"/>
+    <RequiredPlugin name="Sofa.Component.MechanicalLoad"/>
+    <RequiredPlugin name="Sofa.Component.LinearSolver.Iterative"/>
+    <RequiredPlugin name="Sofa.Component.ODESolver.Backward"/>
+    <RequiredPlugin name="Sofa.Component.Engine.Transform"/>
+    <RequiredPlugin name="Sofa.Component.IO.Mesh"/>
+    <RequiredPlugin name="Sofa.Component.Topology.Container.Dynamic"/>
+    <RequiredPlugin name="Sofa.Component.SolidMechanics.FEM.Elastic"/>
+
+    <DefaultAnimationLoop computeBoundingBox="false"/>
+    <DefaultVisualManagerLoop/>
+
+    <MeshGmshLoader name="meshLoaderCoarse" filename="mesh/liver.msh"/>
+    <TransformEngine name="transformer" input_position="@meshLoaderCoarse.position" translation="0 0 0" rotation="0 0 0"/>
+
+
+    <Node name="Particle" bbox="-1 -1 -1 1 1 1">
+
+        <EulerImplicitSolver/>
+        <CGLinearSolver iterations="200" tolerance="1e-09" threshold="1e-09"/>
+
+        <TetrahedronSetTopologyContainer name="topo" src="@../meshLoaderCoarse"/>
+        <TetrahedronSetGeometryAlgorithms template="Vec3d" name="GeomAlgo"/>
+
+        <MechanicalObject template="Vec3d" name="myParticle" showObject="1" showObjectScale="3"/>
+
+        <TetrahedronFEMForceField name="FEM" youngModulus="1000" poissonRatio="0.4" method="large"/>
+        <MeshMatrixMass massDensity="1"/>
+        <ConstantForceField totalForce="1 0 0"/>
+    </Node>
+</Node>
