@@ -19,6 +19,7 @@
     <RequiredPlugin name="Sofa.Component.Collision.Detection.Intersection"/>
     <RequiredPlugin name="Sofa.Component.Collision.Response.Contact"/>
     <RequiredPlugin name="Sofa.Component.Visual"/>
+    <RequiredPlugin name="SofaValidation"/>
 
     <DefaultAnimationLoop/>
     <DefaultVisualManagerLoop/>
@@ -70,5 +71,6 @@
         <UniformMass totalMass="1"/>
         <ConstantForceField force="0 -1 0 0 0 0"/>
         <SphereCollisionModel name="Floor" radius="1" simulated="1" moving="1" contactStiffness="100"/>
+        <Monitor template="Rigid3d" name="particle_1" listening="1" indices="0" ExportPositions="true" ExportVelocities="true" ExportForces="true" showVelocities="true"/>
     </Node>
 </Node>
