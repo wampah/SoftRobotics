@@ -400,3 +400,6 @@ FodyWeavers.xsd
 
 #Ambiente Virtual
 .soro_venv/
+
+#Inventor OldVersions
+.OldVersions/
