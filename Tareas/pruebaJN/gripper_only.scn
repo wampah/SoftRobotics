@@ -1,0 +1,61 @@
+<?xml version="1.0" ?>
+<Node name="root" gravity="0 0 -9.8" dt="0.01">
+    <Node name="RequiredPlugins">
+        <RequiredPlugin name="Sofa.Component.AnimationLoop"/> <!-- Needed to use components [FreeMotionAnimationLoop] -->
+        <RequiredPlugin name="Sofa.Component.IO.Mesh"/> <!-- Needed to use components [MeshOBJLoader] -->
+        <RequiredPlugin name="Sofa.Component.Visual"/> <!-- Needed to use components [InteractiveCamera VisualStyle] -->
+        <RequiredPlugin name="Sofa.Component.Constraint.Lagrangian.Solver"/> <!-- Needed to use components [LCPConstraintSolver] -->
+        <RequiredPlugin name="Sofa.Component.Mass"/> <!-- Needed to use components [UniformMass] -->
+        <RequiredPlugin name="Sofa.Component.ODESolver.Backward"/> <!-- Needed to use components [EulerImplicitSolver] -->
+        <RequiredPlugin name="Sofa.Component.StateContainer"/> <!-- Needed to use components [MechanicalObject] -->
+        <RequiredPlugin name="Sofa.Component.Topology.Container.Dynamic"/> <!-- Needed to use components [QuadSetGeometryAlgorithms,QuadSetTopologyContainer] -->
+        <RequiredPlugin name="Sofa.GL.Component.Rendering3D"/> <!-- Needed to use components [OglModel] -->
+        <RequiredPlugin name="Sofa.GL.Component.Shader"/> <!-- Needed to use components [LightManager,PositionalLight] -->
+        <RequiredPlugin name="Sofa.Component.LinearSolver.Iterative"/> <!-- Needed to use components [CGLinearSolver] -->
+        <RequiredPlugin name="Sofa.Component.Mapping.Linear"/> <!-- Needed to use components [BarycentricMapping] -->
+        <RequiredPlugin name="Sofa.Component.MechanicalLoad"/> <!-- Needed to use components [PlaneForceField] -->
+        <RequiredPlugin name="Sofa.Component.SolidMechanics.Spring"/> <!-- Needed to use components [MeshSpringForceField] -->
+        <RequiredPlugin name="Sofa.Component.SolidMechanics.FEM.Elastic"/> <!-- Needed to use components [TetrahedronFEMForceField] -->
+        <RequiredPlugin name="Sofa.Component.Engine.Select"/> <!-- Needed to use components [BoxROI] -->
+        <RequiredPlugin name="Sofa.Component.Engine.Transform"/> <!-- Needed to use components [IndexValueMapper] -->
+        <RequiredPlugin name="Sofa.Component.Constraint.Projective"/> <!-- Needed to use components [FixedConstraint] -->
+        <RequiredPlugin name="Sofa.Component.LinearSolver.Direct"/> <!-- Needed to use components [SparseLDLSolver] -->
+    </Node>    
+
+    <InteractiveCamera position="0.1 0.1 0.1" lookAt="0 0 0"/>
+    <LightManager />
+        
+    <DefaultAnimationLoop/>    
+    <VisualStyle displayFlags="showVisual showBehaviorModels showForceFields " /> <!--showBehaviorModels showCollisionModels-->    
+    <PositionalLight name="light1" color="1 1 1" attenuation="0.1" position="10 10 10" />
+    
+    <MeshGmshLoader name="volume" filename=".\assets\gripper.msh" />
+   
+<Node name="actuador" >
+        <EulerImplicitSolver rayleighStiffness="0.1" rayleighMass="0.1"/>            
+        <CGLinearSolver iterations="100" tolerance="1e-5" threshold="1e-5"/>
+        <MechanicalObject name="StateVectors" template="Vec3" src="@../volume" />
+        <TetrahedronSetTopologyContainer name="volume_tetra" src="@../volume" />        
+        <TetrahedronSetGeometryAlgorithms template="Vec3" name="GeomAlgo" />        
+        <TetrahedronSetTopologyModifier name="Modifier"/>        
+        <UniformMass totalMass="45.0e-3"/>            
+
+        <TetrahedronFEMForceField template="Vec3" name="FEM" method="large" poissonRatio="0.49" youngModulus="125000"/>
+       
+        <MeshSTLLoader name="fixedMesh" filename=".\assets\gripper_fixed.stl"/>
+        <MeshROI name="fixedROI" src=@fixedMesh drawMesh="1" drawTetrahedra="1" doUpdate="0"
+            position="@StateVectors.position" tetrahedra="@../volume.tetrahedra" 
+            ROIposition="@fixedMesh.position" ROItriangles="@fixedMesh.triangles"
+        />
+        <FixedConstraint name="fixed" indices=@fixedROI.indices />
+
+        <Node name="cavity" >
+            <MeshSTLLoader name="cavity" filename=".\assets\gripper_cavity.stl"/>            
+            <TriangleSetTopologyContainer name="surface_tris" src="@cavity" /> 
+            <TriangleSetGeometryAlgorithms template="Vec3" name="GeomAlgo" />
+            <MechanicalObject name="StateVectors" template="Vec3" src="@cavity" />
+            <SurfacePressureForceField pressure="30000" pulseMode="false" drawForceScale="0.1" useTangentStiffness="false" />
+            <BarycentricMapping/>
+        </Node>                
+    </Node>       
+</Node>
