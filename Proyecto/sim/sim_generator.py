@@ -29,7 +29,7 @@ def createScene(root):
     actuador.addObject('TetrahedronSetTopologyModifier',name="Modifier")
     actuador.addObject('UniformMass',totalMass="45.0e-3")
     #actuador.addObject('TetrahedronFEMForceField',template='Vec3',name='FEM',method='large',poissonRatio='0.47',youngModulus='21000')
-    actuador.addObject('TetrahedronHyperelasticityFEMForceField', template='Vec3',name="HyperElasticMaterial", materialName="MooneyRivlin", ParameterSet="382000 96000 446000")
+    actuador.addObject('TetrahedronHyperelasticityFEMForceField', template='Vec3',name="HyperElasticMaterial", materialName="MooneyRivlin", ParameterSet="10000 120000 10000")
     actuador.addObject('MeshSTLLoader',name='fixedMesh',filename='./assets/fijador.stl')
     actuador.addObject('MeshROI',name='fixedROI',src='@fixedMesh',drawMesh='1',drawTetrahedra='1',doUpdate='0',position='@StateVectors.position',tetrahedra='@../volume.tetrahedra',ROIposition='@fixedMesh.position',ROItriangles='@fixedMesh.triangles')
     actuador.addObject('MeshSTLLoader',name='tipMesh',filename='./assets/ROI.stl')

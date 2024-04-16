@@ -12,7 +12,7 @@ class PressureGen(Sofa.Core.Controller):
         self.node =kw["node"]          
         self.pressure=self.node.cavity.cavityPressure        
         self.index=0
-        self.pressureValues=np.array([200000])
+        self.pressureValues=np.ones(100)*9000
         self.csvFile='test.csv'
         with open(self.csvFile, 'w', newline='') as f:
             df_header = pd.DataFrame({'1': ['Pressure'],'2':['tipX'],'3':['tipY'],'4':['tipZ']})
