@@ -101,7 +101,6 @@ class XboxController(object):
 
 if __name__ == '__main__':
     
-    plt.ion()
     
     joy = XboxController()
     fig = plt.figure(figsize=(10, 5))
@@ -132,11 +131,13 @@ if __name__ == '__main__':
     ax1.set_aspect('equal', adjustable='box')
     ax2.set_aspect('equal', adjustable='box')
     
-    point1,=ax1.plot(0,0,'bo')
-    point2,=ax2.plot(0,0,'ro')
+    point1,=ax1.plot(0,0,'bo',animated=False)
+    point2,=ax2.plot(0,0,'ro',animated=False)
     
-    bar1=ax3.bar(1,0,width=0.1)
-    bar2=ax4.bar(1,0,width=0.1)
+    bar1=ax3.bar(1,0,width=0.1,animated=False)
+    bar2=ax4.bar(1,0,width=0.1,animated=False)
+    
+    plt.show(block=False)
     while True:
         vals=joy.read()
         #print(vals)
@@ -154,34 +155,27 @@ if __name__ == '__main__':
 
         L_trig=vals[4]
         R_trig=vals[5]
+        def animate(frame):
+            point1.set_data(L_angulo, L_radio)
+            point2.set_data(R_angulo, R_radio)
+            bar1[0].set_height(L_trig)
+            bar2[0].set_height(R_trig)
+            return point1, point2, bar1, bar2
         
         point1.set_data(L_angulo,L_radio)
         point2.set_data(R_angulo,R_radio)
         
-        #BR,T,BL - BR,T,BL
-        signal=[0,0,0,0,0,0]
-        
-        if ((L_angulo<=np.deg2rad(30)) or (L_angulo>=np.deg2rad(270))) and (L_radio>0.95) and (L_trig>0.95) and (R_trig<0.1):
-            signal[0]=1
-        if (L_angulo>=np.deg2rad(30)) and (L_angulo<=np.deg2rad(150)) and (L_radio>0.95) and (L_trig>0.95) and (R_trig<0.1):
-            signal[1]=1
-        if (L_angulo>=np.deg2rad(150)) and (L_angulo<=np.deg2rad(270)) and (L_radio>0.95) and (L_trig>0.95) and (R_trig<0.1):
-            signal[2]=1
-            
-        if ((L_angulo<=np.deg2rad(30)) or (L_angulo>=np.deg2rad(270))) and (L_radio>0.95) and (L_trig<0.1) and (R_trig>0.95):
-            signal[0]=2
-        if (L_angulo>=np.deg2rad(30)) and (L_angulo<=np.deg2rad(150)) and (L_radio>0.95) and (L_trig<0.1) and (R_trig>0.95):
-            signal[1]=2
-        if (L_angulo>=np.deg2rad(150)) and (L_angulo<=np.deg2rad(270)) and (L_radio>0.95) and (L_trig<0.1) and (R_trig>0.95):
-            signal[2]=2
-        
-        print(signal)
-        ax1.draw_artist(point1)
-        ax2.draw_artist(point2)
-        
         bar1[0].set_height(L_trig)
         bar2[0].set_height(R_trig)
         
+        ax1.draw_artist(point1)
+        ax2.draw_artist(point2)
+        ax3.draw_artist(bar1[0])
+        ax4.draw_artist(bar2[0])
+        
+        fig.canvas.blit(fig.bbox)
         fig.canvas.flush_events()
+        
+
         
         
