@@ -2,6 +2,7 @@ from inputs import get_gamepad
 import math
 import threading
 import time
+import serial
 import numpy as np
 from matplotlib.gridspec import GridSpec
 
@@ -103,6 +104,12 @@ if __name__ == '__main__':
     
     
     joy = XboxController()
+    
+    ser = serial.Serial('COM8', 9600)
+    
+    interval = 0.1 
+    last_time = time.time()
+    
     fig = plt.figure(figsize=(10, 5))
     gs = GridSpec(1, 4, width_ratios=[1, 6, 6, 1])
     fig.suptitle('Xbox Controller Data')
@@ -131,15 +138,27 @@ if __name__ == '__main__':
     ax1.set_aspect('equal', adjustable='box')
     ax2.set_aspect('equal', adjustable='box')
     
-    point1,=ax1.plot(0,0,'bo',animated=False)
-    point2,=ax2.plot(0,0,'ro',animated=False)
     
-    bar1=ax3.bar(1,0,width=0.1,animated=False)
-    bar2=ax4.bar(1,0,width=0.1,animated=False)
+    
+    point1,=ax1.plot(0,0,'bo', animated=True)
+    point2,=ax2.plot(0,0,'ro', animated=True)
+    
+    bar1=ax3.bar(1,0,width=0.1, animated=True)
+    bar2=ax4.bar(1,0,width=0.1, animated=True)
     
     plt.show(block=False)
+    
+    plt.pause(0.1)
+    
+    bg = fig.canvas.copy_from_bbox(fig.bbox)
+    
+    fig.canvas.blit(fig.bbox)
+    
     while True:
+        fig.canvas.restore_region(bg)
         vals=joy.read()
+        
+        
         #print(vals)
         
         L_radio=np.sqrt(vals[0]**2+vals[1]**2)
@@ -152,15 +171,48 @@ if __name__ == '__main__':
             L_angulo+= 2 * np.pi
         if R_angulo<0:
             R_angulo+= 2 * np.pi
+            
+        #BR,T,BL - BR,T,BL
+        signal=[0,0,0,0,0,0]
+        
+        if ((L_angulo<=np.deg2rad(30)) or (L_angulo>=np.deg2rad(270))) and (L_radio>0.95) and (L_trig>0.5) and (R_trig<0.1):
+            signal[0]=1
+        if (L_angulo>=np.deg2rad(30)) and (L_angulo<=np.deg2rad(150)) and (L_radio>0.95) and (L_trig>0.5) and (R_trig<0.1):
+            signal[1]=1
+        if (L_angulo>=np.deg2rad(150)) and (L_angulo<=np.deg2rad(270)) and (L_radio>0.95) and (L_trig>0.5) and (R_trig<0.1):
+            signal[2]=1
+            
+        if ((L_angulo<=np.deg2rad(30)) or (L_angulo>=np.deg2rad(270))) and (L_radio>0.95) and (L_trig<0.1) and (R_trig>0.95):
+            signal[0]=2
+        if (L_angulo>=np.deg2rad(30)) and (L_angulo<=np.deg2rad(150)) and (L_radio>0.95) and (L_trig<0.1) and (R_trig>0.95):
+            signal[1]=2
+        if (L_angulo>=np.deg2rad(150)) and (L_angulo<=np.deg2rad(270)) and (L_radio>0.95) and (L_trig<0.1) and (R_trig>0.95):
+            signal[2]=2
+        
+        if ((R_angulo<=np.deg2rad(30)) or (R_angulo>=np.deg2rad(270))) and (R_radio>0.95) and (L_trig>0.5) and (R_trig<0.1):
+            signal[3]=1
+        if (R_angulo>=np.deg2rad(30)) and (R_angulo<=np.deg2rad(150)) and (R_radio>0.95) and (L_trig>0.5) and (R_trig<0.1):
+            signal[4]=1
+        if (R_angulo>=np.deg2rad(150)) and (R_angulo<=np.deg2rad(270)) and (R_radio>0.95) and (L_trig>0.5) and (R_trig<0.1):
+            signal[5]=1
+            
+        if ((R_angulo<=np.deg2rad(30)) or (R_angulo>=np.deg2rad(270))) and (R_radio>0.95) and (L_trig<0.1) and (R_trig>0.95):
+            signal[3]=2
+        if (R_angulo>=np.deg2rad(30)) and (R_angulo<=np.deg2rad(150)) and (R_radio>0.95) and (L_trig<0.1) and (R_trig>0.95):
+            signal[4]=2
+        if (R_angulo>=np.deg2rad(150)) and (R_angulo<=np.deg2rad(270)) and (R_radio>0.95) and (L_trig<0.1) and (R_trig>0.95):
+            signal[5]=2
+        
+        print(','.join(map(str, signal)) + '\n')
+        current_time = time.time()
+        if current_time - last_time >= interval:
+            values_str = ','.join(map(str, signal)) + '\n'
+            ser.write(values_str.encode())
+            last_time = current_time
+        
 
         L_trig=vals[4]
         R_trig=vals[5]
-        def animate(frame):
-            point1.set_data(L_angulo, L_radio)
-            point2.set_data(R_angulo, R_radio)
-            bar1[0].set_height(L_trig)
-            bar2[0].set_height(R_trig)
-            return point1, point2, bar1, bar2
         
         point1.set_data(L_angulo,L_radio)
         point2.set_data(R_angulo,R_radio)
