@@ -1,7 +1,11 @@
 # SoftRobotics
 
 ## Introducción
-Este es mi repositorio personal para el curso de Soft Robotics (IMEC-4550) de la Universidad de Los Andes.
+Este es el repositorio de un grupo de trabajo para el curso de Soft Robotics (IMEC-4550) de la Universidad de Los Andes.
+
+### Demo de los resultados obtenidos
+<p align="center"><img src="Demo/demo_actuadores.gif" alt="Demo"/></p>
+<p align="center"><img src="Demo/demo_simulacion.gif" alt="Demo"/></p>
 
 ## Programas usados en el desarrollo
 - Blender (para diseño 3D)
