@@ -3,8 +3,8 @@
 ## Introducción
 Este es el repositorio de un grupo de trabajo para el curso de Soft Robotics (IMEC-4550) de la Universidad de Los Andes.
 
-[!robot](Demo/rob.jpeg)
-[!robot2](Demo/render.png)
+![robot](Demo/rob.jpeg)
+![robot2](Demo/render.png)
 
 ### Demo de los resultados obtenidos
 <p align="center"><img src="Demo/demo_actuadores.gif" alt="Demo"/></p>
