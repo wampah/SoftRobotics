@@ -6,11 +6,17 @@ Este es el repositorio de un grupo de trabajo para el curso de Soft Robotics (IM
 <p align="center">
   <img src="Demo/rob.jpeg" alt="Demo" width="50%"/>
 </p>
-<p align="center">
-  <img src="Demo/render.png" alt="Demo" width="50%"/>
-  <img src="Demo/sect.png" alt="Demo" width="50%"/>
-</p>
 
+<table align="center">
+  <tr>
+    <td align="center" width="50%">
+      <img src="Demo/render.png" style="width:100%; height:250px; object-fit:cover;">
+    </td>
+    <td align="center" width="50%">
+      <img src="Demo/sect.png" style="width:100%; height:250px; object-fit:cover;">
+    </td>
+  </tr>
+</table>
 
 ### Demo de los resultados obtenidos
 <p align="center"><img src="Demo/demo_actuadores.gif" alt="Demo"/></p>
