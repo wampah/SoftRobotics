@@ -10,10 +10,10 @@ Este es el repositorio de un grupo de trabajo para el curso de Soft Robotics (IM
 <table align="center">
   <tr>
     <td align="center" width="50%">
-      <img src="Demo/render.png" style="width:100%; height:250px; ">
+      <img src="Demo/render.png"  ">
     </td>
     <td align="center" width="50%">
-      <img src="Demo/sect.png" style="width:100%; height:250px;;">
+      <img src="Demo/sect.png"">
     </td>
   </tr>
 </table>
