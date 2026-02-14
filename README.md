@@ -8,6 +8,7 @@ Este es el repositorio de un grupo de trabajo para el curso de Soft Robotics (IM
 </p>
 <p align="center">
   <img src="Demo/render.png" alt="Demo" width="50%"/>
+  <img src="Demo/sect.png" alt="Demo" width="50%"/>
 </p>
 
 
